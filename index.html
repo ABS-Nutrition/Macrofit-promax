@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MacroFit Pro – Morphotype Ultra</title>
+<style>
+:root{
+  --bg:#050709;
+  --card:#0b0f14;
+  --panel:#0f141b;
+  --input:#111820;
+  --border:#1e2833;
+  --accent:#c9f02f;
+  --accent-dim:#c9f02f22;
+  --text:#e8eef4;
+  --muted:#9aa6b2;
+  --gold:#d4af37;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  padding:0;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  background:linear-gradient(180deg, #0b0f14 0%, #050709 100%);
+  color:var(--text);
+  min-height:100vh;
+}
+.app{
+  max-width: 720px;
+  margin:30px auto;
+  background:var(--card);
+  padding:24px;
+  border-radius:20px;
+  box-shadow:0 0 40px rgba(0,0,0,.9);
+  border:1px solid var(--border);
+  position:relative;
+}
+.app::before{
+  content:"";
+  display:block;
+  height:5px;
+  background:linear-gradient(90deg, var(--gold), var(--accent), #0b0f14);
+  margin:-24px -24px 20px -24px;
+  border-radius:20px 20px 0 0;
+}
+.header{text-align:center;margin-bottom:18px;}
+h1{margin:0;color:var(--accent);font-size:26px;font-weight:800;}
+.subtitle{font-size:13px;color:var(--muted);margin-top:6px;}
+.section{margin-top:22px;padding-top:18px;border-top:1px solid var(--border);}
+.section h2{color:var(--accent);font-size:18px;}
+.field{ margin-top:12px; }
+label{display:block;font-weight:700;margin-bottom:5px;font-size:14px;color:var(--muted);}
+input, select, textarea{
+  width:100%;
+  padding:12px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:var(--input);
+  color:white;
+  font-size:16px;
+}
+button{
+  width:100%;
+  margin-top:18px;
+  padding:13px;
+  border-radius:16px;
+  border:none;
+  background:linear-gradient(90deg, var(--gold), var(--accent));
+  color:#050709;
+  font-weight:900;
+  font-size:16px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  cursor:pointer;
+}
+.table-box{
+  margin-top:18px;
+  background:var(--panel);
+  padding:14px;
+  border-radius:16px;
+  border-left:5px solid var(--accent);
+}
+table{width:100%;border-collapse:collapse;margin-top:8px;}
+th, td{border:1px solid var(--border);padding:8px;text-align:center;font-size:14px;}
+th{background:#0b0f14;color:var(--accent);}
+.result{ font-weight:800; }
+.note{font-size:12px;color:var(--muted);}
+.footer{margin-top:18px;font-size:12px;text-align:center;color:var(--muted);}
+.reco-box{margin-top:12px;padding:12px;border:1px solid var(--border);border-radius:12px;background:var(--panel);}
+.reco-title{color:var(--accent);font-weight:800;margin-bottom:6px;}
+.explain{
+  margin-top:10px;
+  font-size:12px;
+  color:var(--muted);
+  background:#0b0f14;
+  padding:10px;
+  border-radius:10px;
+  border:1px solid var(--border);
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="header">
+    <h1>⚜️ MacroFit Pro — MORPHOTYPE ⚜️</h1>
+    <div class="subtitle">Calculs métaboliques, morphologiques et personnalisés</div>
+  </div>
+
+  <div class="section">
+    <h2>1) Données de base</h2>
+
+    <div class="field"><label>Âge</label><input type="number" id="age"></div>
+    <div class="field"><label>Taille (cm)</label><input type="number" id="taille"></div>
+    <div class="field"><label>Poids (kg)</label><input type="number" id="poids"></div>
+    <div class="field"><label>Poids cible (kg)</label><input type="number" id="poids_cible" placeholder="Optionnel"></div>
+
+    <div class="field">
+      <label>Sexe</label>
+      <select id="sexe">
+        <option value="M">Homme</option>
+        <option value="F">Femme</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Niveau d'activité</label>
+      <select id="activite">
+        <option value="1.2">Sédentaire (0–1x / semaine)</option>
+        <option value="1.375">Léger (1–2x / semaine)</option>
+        <option value="1.55">Modéré (3–5x / semaine)</option>
+        <option value="1.725">Très actif (6–7x / semaine)</option>
+        <option value="1.9">Extrême (2x/jour ou sport intensif)</option>
+      </select>
+    </div>
+
+    <div class="field"><label>Heures de sommeil / nuit</label><input type="number" id="sommeil"></div>
+    <div class="explain">
+      <b>Sommeil :</b> influence directement récupération, hormones, performance et gestion du poids.
+    </div>
+
+    <div class="field"><label>Niveau de stress (1–10)</label><input type="number" id="stress"></div>
+    <div class="explain">
+      <b>Comment noter ton stress (repère pratique) :</b><br>
+      • <b>1–3 (faible)</b> : tu dors bien, tu te sens en contrôle, peu de tensions.<br>
+      • <b>4–6 (modéré)</b> : charge de travail moyenne, fatigue légère en fin de journée.<br>
+      • <b>7–8 (élevé)</b> : sommeil perturbé, irritabilité, récupération plus lente.<br>
+      • <b>9–10 (très élevé)</b> : insomnies, surmenage, difficultés à s’entraîner ou à se concentrer.
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>2) Choisis ta morphologie</h2>
+    <select id="morpho">
+      <option value="ecto">Ectomorphe</option>
+      <option value="meso">Mésomorphe</option>
+      <option value="endo">Endomorphe</option>
+    </select>
+
+    <div class="explain">
+      <b>Comment choisir ?</b><br>
+      • <b>Ectomorphe</b> : mince, métabolisme rapide, difficulté à prendre du poids/muscle.<br>
+      • <b>Mésomorphe</b> : athlétique, prend du muscle facilement, équilibre naturel.<br>
+      • <b>Endomorphe</b> : tendance à stocker du gras, prise de poids facile, métabolisme plus lent.
+    </div>
+  </div>
+
+  <button id="btnCalc">CALCULER</button>
+
+  <div class="section">
+    <h2>3) Bloc Métabolisme (BMR & TDEE)</h2>
+    <div class="table-box">
+      <table>
+        <tr>
+          <th>BMR Harris-Benedict</th>
+          <th>BMR Mifflin</th>
+          <th>TDEE brut</th>
+          <th>TDEE ajusté</th>
+        </tr>
+        <tr>
+          <td id="bmr_hb" class="result">-</td>
+          <td id="bmr_m" class="result">-</td>
+          <td id="tdee_brut" class="result">-</td>
+          <td id="tdee_adj" class="result">-</td>
+        </tr>
+      </table>
+
+      <div style="margin-top:10px; font-size:13px; color:var(--accent);">
+        <b>Moyennes :</b><br>
+        BMR moyen : <span id="bmr_avg"></span> kcal/j<br>
+        TDEE moyen : <span id="tdee_avg"></span> kcal/j
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>4) Bloc Morphologie & Composition</h2>
+    <div class="table-box">
+      <table>
+        <tr>
+          <th>IMC</th>
+          <th>Catégorie</th>
+          <th>Somatotype final</th>
+        </tr>
+        <tr>
+          <td id="imc" class="result">-</td>
+          <td id="imc_cat" class="result">-</td>
+          <td id="somato" class="result">-</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>5) Bloc Macros personnalisées (g/jour)</h2>
+    <div class="table-box">
+      <table>
+      <div class="explain">
+      <b>Comment utiliser ces macros :</b><br>
+      • Protéines : viser ces valeurs chaque jour (3–5 prises).<br>
+      • Lipides : minimum recommandé pour les hormones.<br>
+      • Glucides : variable principale selon ton objectif et l’entraînement.
+      </div>
+      <table>
+        <tr>
+          <th>Objectif</th>
+          <th>Protéines</th>
+          <th>Lipides</th>
+          <th>Glucides</th>
+        </tr>
+        <tr>
+          <td>Maintien</td>
+          <td id="p_maint" class="result">-</td>
+          <td id="l_maint" class="result">-</td>
+          <td id="g_maint" class="result">-</td>
+        </tr>
+        <tr>
+          <td>Sèche</td>
+          <td id="p_cut" class="result">-</td>
+          <td id="l_cut" class="result">-</td>
+          <td id="g_cut" class="result">-</td>
+        </tr>
+        <tr>
+          <td>Prise</td>
+          <td id="p_bulk" class="result">-</td>
+          <td id="l_bulk" class="result">-</td>
+          <td id="g_bulk" class="result">-</td>
+        </tr>
+      </table>
+    </div>
+  
+  <!-- ================== 5B) RÉPARTITION JOURNALIÈRE TYPE ================== -->
+  <div class="section">
+    <h2>5B) Répartition journalière type</h2>
+    <div class="table-box">
+      <table>
+        <tr>
+          <th>Petit-déjeuner</th>
+          <th>Déjeuner</th>
+          <th>Dîner</th>
+          <th>Collation</th>
+        </tr>
+        <tr>
+          <td id="rep_breakfast" class="result">-</td>
+          <td id="rep_lunch" class="result">-</td>
+          <td id="rep_dinner" class="result">-</td>
+          <td id="rep_snack" class="result">-</td>
+        </tr>
+      </table>
+    </div>
+    <div class="explain">
+      <b>Comment lire ce bloc :</b><br>
+      Cette répartition indique comment répartir tes calories et macros sur la journée
+      pour optimiser énergie, performance et contrôle de l’appétit.<br><br>
+
+      <b>Logique selon morphotype :</b><br>
+      • <b>Ectomorphe</b> : métabolisme rapide → répartition plus équilibrée avec une collation
+      pour faciliter l’atteinte des calories totales.<br>
+      • <b>Mésomorphe</b> : profil intermédiaire → répartition homogène avec priorité autour
+      des séances d’entraînement.<br>
+      • <b>Endomorphe</b> : meilleure sensibilité insulinique en début de journée → plus de calories
+      au déjeuner et au dîner, petit-déjeuner plus léger.<br><br>
+
+      <b>Application pratique :</b><br>
+      • Mange des protéines à chaque repas.<br>
+      • Place plus de glucides autour de l’entraînement.<br>
+      • Garde des lipides plus bas en post-entraînement.
+    </div>
+  </div>
+</div>
+
+  <div class="section">
+    <h2>6) Bloc Fatigue & Récupération</h2>
+    <div class="table-box">
+      <table>
+        <tr>
+          <th>Score fatigue (/10)</th>
+          <th>Ajustement calories</th>
+          <th>Priorités récupération</th>
+        </tr>
+        <tr>
+          <td id="fatigue" class="result">-</td>
+          <td id="cal_adj" class="result">-</td>
+          <td id="recup" class="result">-</td>
+        </tr>
+      </table>
+    </div>
+  
+  
+  <div class="section">
+    <h2>6B) Progression & temps estimé</h2>
+    <div class="table-box">
+      <table>
+        <tr>
+          <th>Vitesse conseillée — perte de gras</th>
+          <th>Vitesse conseillée — prise de muscle</th>
+          <th>Temps estimé pour atteindre l’objectif</th>
+        </tr>
+        <tr>
+          <td class="result">0,25 – 0,75 kg / semaine</td>
+          <td class="result">0,1 – 0,5 kg / semaine</td>
+          <td id="time_goal" class="result">-</td>
+        </tr>
+      </table>
+    </div>
+    <div class="explain">
+      <b>Comment comprendre les trois cases ci-dessus :</b><br><br>
+
+      <b>1) Vitesse conseillée — perte de gras</b><br>
+      Cette plage indique à quelle vitesse il est généralement possible de perdre du poids
+      principalement sous forme de graisse, tout en préservant au maximum la masse musculaire.
+      Plus tu te rapproches du haut de la fourchette, plus le déficit est important et plus
+      le suivi (protéines, sommeil, récupération) devient déterminant.<br><br>
+
+      <b>2) Vitesse conseillée — prise de muscle</b><br>
+      Cette plage représente une vitesse réaliste pour prendre du poids majoritairement sous
+      forme de muscle. Aller plus vite que cette fourchette augmente fortement le risque de
+      prendre de la masse grasse en même temps que le muscle.<br><br>
+
+      <b>3) Temps estimé pour atteindre l’objectif</b><br>
+      Cette case traduit les deux vitesses précédentes en une estimation de durée :
+      <ul>
+        <li>Si tu as renseigné un <b>poids cible</b> au bloc 1, le temps est calculé à partir
+        de l’écart réel entre ton poids actuel et ton poids cible.</li>
+        <li>Si tu n’as pas renseigné de poids cible, une estimation moyenne est fournie
+        en fonction de ta catégorie d’IMC (maigreur, normal, surpoids ou obésité).</li>
+      </ul>
+      <br>
+      <b>À retenir :</b> ces durées sont indicatives. Elles dépendent du respect de tes macros,
+      de ton entraînement, de ton sommeil et de ton niveau de stress.
+    </div>
+  </div>
+<div class="section">
+    <h2>7) Indicateurs Quotidiens</h2>
+    <div class="table-box">
+      <table>
+      <div class="explain">
+      <b>Lecture rapide :</b><br>
+      • Hydratation = fourchette cible basée sur ton poids.<br>
+      • Caféine = limite quotidienne de sécurité.<br>
+      • Pas = activité hors sport (santé métabolique).
+      </div>
+      <table>
+        <tr>
+          <th>Hydratation</th>
+          <th>Caféine max</th>
+          <th>Pas / jour</th>
+        </tr>
+        <tr>
+          <td id="water" class="result">-</td>
+          <td id="caffeine" class="result">-</td>
+          <td id="steps" class="result">-</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  
+  <div class="section">
+    <h2>8) Analyse Métabolique</h2>
+
+    <div class="table-box">
+      <table>
+        <tr>
+          <th>Score métabolique</th>
+          <th>Dépense / séance</th>
+          <th>Vitesse métabolique</th>
+        </tr>
+        <tr>
+          <td id="score" class="result">-</td>
+          <td id="burn" class="result">-</td>
+          <td id="metabolic_speed" class="result">-</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="explain">
+      <b>Comment lire ces trois indicateurs :</b><br><br>
+
+      <b>Score métabolique</b><br>
+      Il mesure ta proximité avec un IMC de référence de 22,5, généralement associé à un bon équilibre
+      entre santé, performance et composition corporelle. Plus le score est élevé, plus tu te situes
+      proche de cette zone de référence.<br><br>
+
+      <b>Dépense / séance</b><br>
+      C’est une estimation moyenne des calories brûlées lors d’une séance d’entraînement typique
+      pour ton profil (gabarit, activité, morphologie). Elle sert de repère pour comprendre l’impact
+      de ton sport sur ton bilan énergétique quotidien.<br><br>
+
+      <b>Vitesse métabolique</b><br>
+      Cet indicateur reflète ta capacité à tolérer des variations caloriques. Une valeur plus élevée
+      signifie que ton métabolisme supporte mieux des surplus ou déficits, tandis qu’une valeur plus
+      basse invite à rester dans des écarts plus modérés.
+    </div>
+  </div>
+<div class="section">
+    <h2>9) Recommandations & Interprétation</h2>
+    <div class="explain">
+    Ce bloc synthétise ton profil (morphologie, fatigue, IMC) pour te donner
+    des conseils actionnables : orientation, protéines cibles et compléments.
+    </div>
+    <div id="reco_global" class="reco-box"></div>
+    <div id="reco_prot" class="reco-box"></div>
+    <div id="reco_supp" class="reco-box"></div>
+
+    <div class="reco-box">
+      <div class="reco-title">Interprétation personnalisée</div>
+      <p id="advice"></p>
+    </div>
+  </div>
+
+  <div class="footer">MacroFit Pro — Morphotype</div>
+</div>
+
+<script>
+document.getElementById("btnCalc").addEventListener("click", function(){
+
+const age = +document.getElementById("age").value;
+const taille = +document.getElementById("taille").value;
+const poids = +document.getElementById("poids").value;
+const sexe = document.getElementById("sexe").value;
+const act = +document.getElementById("activite").value;
+const sommeil = +document.getElementById("sommeil").value || 7;
+const stress = +document.getElementById("stress").value || 5;
+const morpho = document.getElementById("morpho").value;
+
+// ===== BMR =====
+const bmr_hb = (sexe==="M")
+? 66 + (13.7*poids)+(5*taille)-(6.8*age)
+: 655 + (9.6*poids)+(1.8*taille)-(4.7*age);
+
+const bmr_m = (sexe==="M")
+? (10*poids)+(6.25*taille)-(5*age)+5
+: (10*poids)+(6.25*taille)-(5*age)-161;
+
+const tdee_brut = bmr_m * act;
+
+// ===== IMC =====
+const imc = poids / Math.pow(taille/100,2);
+let imc_cat = imc<18.5?"Maigreur":imc<25?"Normal":imc<30?"Surpoids":"Obésité";
+
+// ===== TDEE AJUSTÉ =====
+let tdee_adj = tdee_brut;
+if(morpho==="ecto") tdee_adj*=1.05;
+if(morpho==="endo") tdee_adj*=0.95;
+
+// ===== MOYENNES =====
+const bmr_avg = ((bmr_hb + bmr_m) / 2).toFixed(0);
+const tdee_avg = ((tdee_brut + tdee_adj) / 2).toFixed(0);
+
+// ===== MACROS =====
+const prot_kg = (morpho==="endo") ? 2.2 : (morpho==="ecto") ? 1.8 : 2.0;
+
+const p_maint = Math.round(prot_kg * poids);
+const p_cut   = Math.round((prot_kg + 0.4) * poids);
+const p_bulk  = Math.round((prot_kg - 0.2) * poids);
+
+const l_maint = Math.round(poids * 0.8);
+const l_cut   = Math.round(poids * 0.7);
+const l_bulk  = Math.round(poids * 0.9);
+
+const g_maint = Math.round((tdee_adj - (p_maint*4) - (l_maint*9)) / 4);
+const g_cut   = Math.round((tdee_adj - 350 - (p_cut*4) - (l_cut*9)) / 4);
+const g_bulk  = Math.round((tdee_adj + 350 - (p_bulk*4) - (l_bulk*9)) / 4);
+
+// ===== FATIGUE =====
+const fatigue_score = Math.max(0,Math.min(10,(10-sommeil)+(stress/2)));
+let cal_adj_txt="", recup_txt="";
+if(fatigue_score>=7){
+  cal_adj_txt="-150 kcal";
+  recup_txt="Sommeil prioritaire + Magnésium";
+}else if(fatigue_score>=4){
+  cal_adj_txt="Maintien";
+  recup_txt="Hydratation + mobilité";
+}else{
+  cal_adj_txt="+150 kcal";
+  recup_txt="Récupération optimale";
+}
+
+// ===== AFFICHAGE =====
+document.getElementById("bmr_hb").innerText = Math.round(bmr_hb);
+document.getElementById("bmr_m").innerText = Math.round(bmr_m);
+document.getElementById("tdee_brut").innerText = Math.round(tdee_brut);
+document.getElementById("tdee_adj").innerText = Math.round(tdee_adj);
+document.getElementById("bmr_avg").innerText = bmr_avg;
+document.getElementById("tdee_avg").innerText = tdee_avg;
+
+document.getElementById("imc").innerText = imc.toFixed(1);
+document.getElementById("imc_cat").innerText = imc_cat;
+document.getElementById("somato").innerText =
+morpho==="ecto"?"Ectomorphe":morpho==="meso"?"Mésomorphe":"Endomorphe";
+
+// Macros
+document.getElementById("p_maint").innerText = p_maint;
+document.getElementById("p_cut").innerText = p_cut;
+document.getElementById("p_bulk").innerText = p_bulk;
+document.getElementById("l_maint").innerText = l_maint;
+document.getElementById("l_cut").innerText = l_cut;
+document.getElementById("l_bulk").innerText = l_bulk;
+document.getElementById("g_maint").innerText = g_maint;
+document.getElementById("g_cut").innerText = g_cut;
+document.getElementById("g_bulk").innerText = g_bulk;
+
+// Fatigue
+document.getElementById("fatigue").innerText = fatigue_score.toFixed(1)+"/10";
+document.getElementById("cal_adj").innerText = cal_adj_txt;
+document.getElementById("recup").innerText = recup_txt;
+
+// Indicateurs quotidiens
+document.getElementById("water").innerText =
+`${(poids*30).toFixed(0)}–${(poids*35).toFixed(0)} ml/j`;
+document.getElementById("caffeine").innerText =
+(sexe==="M"?400:300)+" mg/j max";
+document.getElementById("steps").innerText =
+act<=1.375?"6–8k":act<=1.55?"8–10k":"10–12k+";
+
+// Analyse métabolique
+const score = (100 - Math.abs(22.5 - imc)*2).toFixed(2);
+document.getElementById("score").innerText = score;
+document.getElementById("burn").innerText =
+morpho==="ecto"?"350 kcal":morpho==="endo"?"280 kcal":"320 kcal";
+document.getElementById("metabolic_speed").innerText =
+morpho==="ecto"?"Rapide":morpho==="endo"?"Lent":"Équilibré";
+
+// Recommandations
+document.getElementById("reco_global").innerHTML =
+"<div class='reco-title'>Orientation générale</div>"+
+(morpho==="ecto"
+?"Surplus léger + repas fréquents."
+:morpho==="meso"
+?"Équilibre et progression régulière."
+:"Déficit modéré + musculation + cardio.");
+
+document.getElementById("reco_prot").innerHTML =
+"<div class='reco-title'>Protéines cibles</div>"+
+p_maint+" g/j (maintien) • "+p_cut+" g/j (sèche) • "+p_bulk+" g/j (prise)";
+
+document.getElementById("reco_supp").innerHTML =
+"<div class='reco-title'>Compléments</div>"+
+(morpho==="ecto"
+?"Whey, Créatine, Oméga-3"
+:morpho==="endo"
+?"Whey, Oméga-3, Magnésium"
+:"Whey, Créatine, Vitamine D");
+
+// Interprétation
+const advices={
+maigreur:[
+"Augmente progressivement tes calories.",
+"Priorise glucides post-training.",
+"Limite le cardio.",
+"Ajoute une collation le soir.",
+"Vise 7–8h de sommeil.",
+"Progresse lentement en charge.",
+"Choisis aliments denses.",
+"Hydrate-toi bien.",
+"3–4 séances max.",
+"Évite les déficits.",
+"Augmente tes portions.",
+"Suivi hebdomadaire."
+],
+normal:[
+"Maintiens tes calories.",
+"Progresse en musculation.",
+"Garde un bon ratio.",
+"Surveille ta récup.",
+"Vise 8–10k pas.",
+"Hydrate-toi.",
+"Ajoute 1 cardio.",
+"Optimise ton sommeil.",
+"Stabilise ton poids.",
+"Qualité des aliments.",
+"Évite excès.",
+"Planifie tes repas."
+],
+surpoids:[
+"Réduis légèrement.",
+"Augmente tes pas.",
+"Priorise protéines.",
+"Limite sodas.",
+"3 muscu + 2 cardio.",
+"Suivi hebdo.",
+"Hydrate-toi.",
+"Déficit modéré.",
+"Varie entraînement.",
+"Évite régimes extrêmes.",
+"Reste constant.",
+"Planifie tes repas."
+],
+obesite:[
+"Déficit contrôlé.",
+"Muscu 3–4x.",
+"Cardio régulier.",
+"Protéines élevées.",
+"Réduction progressive.",
+"Sommeil prioritaire.",
+"Bonne hydratation.",
+"Suivi conseillé.",
+"Pas de restrictions brutales.",
+"Habitudes durables.",
+"Plus d’activité.",
+"Suivi régulier."
+]
+};
+
+let cat = imc<18.5?"maigreur":imc<25?"normal":imc<30?"surpoids":"obesite";
+document.getElementById("advice").innerText =
+advices[cat][Math.floor(Math.random()*advices[cat].length)];
+});
+</script>
+</body>
+</html>
